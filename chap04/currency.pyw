@@ -72,7 +72,7 @@ class Form(QDialog):
                             pass
                 return "Exchange Rates Date: " + date
         except Exception as e:
-            return "Failed to download:\n{}".format(e)
+            return "Failed to open:\n{}".format(e)
 
 
 app = QApplication(sys.argv)

@@ -31,12 +31,11 @@ class Form(QDialog):
         self.lineedit.returnPressed.connect(self.updateUi)
         self.setWindowTitle("Calculate")
 
-
     def updateUi(self):
         try:
             text = self.lineedit.text()
             self.browser.append("{} = <b>{}</b>".format(text,
-                                eval(text)))
+                                                        eval(text)))
         except:
             self.browser.append("<font color=red>{} is invalid!</font>"
                                 .format(text))
@@ -46,4 +45,3 @@ app = QApplication(sys.argv)
 form = Form()
 form.show()
 app.exec_()
-
