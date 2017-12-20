@@ -11,8 +11,9 @@
 
 import sys
 import urllib.request
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
 
 class Form(QDialog):
@@ -39,14 +40,10 @@ class Form(QDialog):
         grid.addWidget(self.toComboBox, 2, 0)
         grid.addWidget(self.toLabel, 2, 1)
         self.setLayout(grid)
-        self.connect(self.fromComboBox,
-                SIGNAL("currentIndexChanged(int)"), self.updateUi)
-        self.connect(self.toComboBox,
-                SIGNAL("currentIndexChanged(int)"), self.updateUi)
-        self.connect(self.fromSpinBox,
-                SIGNAL("valueChanged(double)"), self.updateUi)
+        self.fromComboBox.currentIndexChanged.connect(self.updateUi)
+        self.toComboBox.currentIndexChanged.connect(self.updateUi)
+        self.fromSpinBox.valueChanged.connect(self.updateUi)
         self.setWindowTitle("Currency")
-
 
     def updateUi(self):
         to = self.toComboBox.currentText()
@@ -55,27 +52,25 @@ class Form(QDialog):
                   self.fromSpinBox.value())
         self.toLabel.setText("{0:.2f}".format(amount))
 
-
-    def getdata(self): # Idea taken from the Python Cookbook
+    def getdata(self):  # Idea taken from the Python Cookbook
         self.rates = {}
         try:
             date = "Unknown"
-            data = urllib.request.urlopen("http://www.bankofcanada.ca"
-                    "/en/markets/csv/exchange_eng.csv").read()
-            for line in data.decode("utf-8", "replace").split("\n"):
-                line = line.rstrip()
-                if not line or line.startswith(("#", "Closing ")):
-                    continue
-                fields = line.split(",")
-                if line.startswith("Date "):
-                    date = fields[-1]
-                else:
-                    try:
-                        value = float(fields[-1])
-                        self.rates[fields[0]] = value
-                    except ValueError:
-                        pass
-            return "Exchange Rates Date: " + date
+            with open("exchange_eng.csv") as f:
+                for line in f:
+                    line = line.rstrip()
+                    if not line or line.startswith(("#", "Closing ")):
+                        continue
+                    fields = line.split(",")
+                    if line.startswith("Date "):
+                        date = fields[-1]
+                    else:
+                        try:
+                            value = float(fields[-1])
+                            self.rates[fields[0]] = value
+                        except ValueError:
+                            pass
+                return "Exchange Rates Date: " + date
         except Exception as e:
             return "Failed to download:\n{}".format(e)
 
@@ -84,4 +79,3 @@ app = QApplication(sys.argv)
 form = Form()
 form.show()
 app.exec_()
-
