@@ -11,8 +11,9 @@
 
 import sys
 from math import *
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
 
 class Form(QDialog):
@@ -27,8 +28,7 @@ class Form(QDialog):
         layout.addWidget(self.lineedit)
         self.setLayout(layout)
         self.lineedit.setFocus()
-        self.connect(self.lineedit, SIGNAL("returnPressed()"),
-                     self.updateUi)
+        self.lineedit.returnPressed.connect(self.updateUi)
         self.setWindowTitle("Calculate")
 
 
