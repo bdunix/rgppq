@@ -10,8 +10,9 @@
 # the GNU General Public License for more details.
 
 import sys
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
 
 class Form(QDialog):
@@ -28,8 +29,8 @@ class Form(QDialog):
         layout.addWidget(spinbox)
         self.setLayout(layout)
 
-        self.connect(dial, SIGNAL("valueChanged(int)"), spinbox.setValue)
-        self.connect(spinbox, SIGNAL("valueChanged(int)"), dial.setValue)
+        dial.valueChanged.connect(spinbox.setValue)
+        spinbox.valueChanged.connect(dial.setValue)
         self.setWindowTitle("Signals and Slots")
 
 
@@ -47,26 +48,23 @@ class Form2(QDialog):
         layout.addWidget(spinbox)
         self.setLayout(layout)
 
-        self.connect(dial, SIGNAL("valueChanged(int)"),
-                     spinbox, SLOT("setValue(int)"))
-        self.connect(spinbox, SIGNAL("valueChanged(int)"),
-                     dial, SLOT("setValue(int)"))
+        dial.valueChanged.connect(spinbox.setValue)
+        spinbox.valueChanged.connect(dial.setValue)
         self.setWindowTitle("Signals and Slots")
 
 
 class ZeroSpinBox(QSpinBox):
-
     zeros = 0
+    atzero = pyqtSignal(int)
 
     def __init__(self, parent=None):
         super(ZeroSpinBox, self).__init__(parent)
-        self.connect(self, SIGNAL("valueChanged(int)"), self.checkzero)
-
+        self.valueChanged.connect(self.checkzero)
 
     def checkzero(self):
         if self.value() == 0:
             self.zeros += 1
-            self.emit(SIGNAL("atzero"), self.zeros)
+            self.atzero.emit(self.zeros)
 
 
 class Form3(QDialog):
@@ -83,13 +81,10 @@ class Form3(QDialog):
         layout.addWidget(zerospinbox)
         self.setLayout(layout)
 
-        self.connect(dial, SIGNAL("valueChanged(int)"),
-                     zerospinbox, SLOT("setValue(int)"))
-        self.connect(zerospinbox, SIGNAL("valueChanged(int)"),
-                     dial, SLOT("setValue(int)"))
-        self.connect(zerospinbox, SIGNAL("atzero"), self.announce)
+        dial.valueChanged.connect(zerospinbox.setValue)
+        zerospinbox.valueChanged.connect(dial.setValue)
+        zerospinbox.atzero.connect(self.announce)
         self.setWindowTitle("Signals and Slots")
-
 
     def announce(self, zeros):
         print("ZeroSpinBox has been at zero {} times".format(zeros))
@@ -106,34 +101,30 @@ class Form4(QDialog):
         layout.addWidget(lineedit)
         self.setLayout(layout)
 
-        self.connect(lineedit, SIGNAL("textChanged(QString)"),
-                     self.consoleEcho)
+        lineedit.textChanged.connect(self.consoleEcho)
         self.setWindowTitle("Signals and Slots")
-
 
     def consoleEcho(self, text):
         print(text)
-        
 
 
 class TaxRate(QObject):
+    rateChanged = pyqtSignal(float)
 
     def __init__(self):
         super(TaxRate, self).__init__()
         self.__rate = 17.5
 
-
     def rate(self):
         return self.__rate
-
 
     def setRate(self, rate):
         if rate != self.__rate:
             self.__rate = rate
-            self.emit(SIGNAL("rateChanged"), self.__rate)
+            self.rateChanged.emit(self.__rate)
 
 
-def rateChanged(value):
+def on_rateChanged(value):
     print("TaxRate changed to {0:.2f}%".format(value))
 
 
@@ -150,10 +141,8 @@ elif sys.argv[1] == "4":
 if form is not None:
     form.show()
     app.exec_()
-else: # if sys.argv[1] == "5"
+else:  # if sys.argv[1] == "5"
     vat = TaxRate()
-    vat.connect(vat, SIGNAL("rateChanged"), rateChanged)
-    vat.setRate(17.5)    # No change will occur (new rate is the same)
-    vat.setRate(8.5)     # A change will occur (new rate is different)
-
-
+    vat.rateChanged.connect(on_rateChanged)
+    vat.setRate(17.5)  # No change will occur (new rate is the same)
+    vat.setRate(8.5)  # A change will occur (new rate is different)
