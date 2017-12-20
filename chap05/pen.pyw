@@ -10,8 +10,9 @@
 # the GNU General Public License for more details.
 
 import sys
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
 
 class PenPropertiesDlg(QDialog):
@@ -46,10 +47,8 @@ class PenPropertiesDlg(QDialog):
         layout.addLayout(buttonLayout, 2, 0, 1, 3)
         self.setLayout(layout)
 
-        self.connect(okButton, SIGNAL("clicked()"),
-                     self, SLOT("accept()"))
-        self.connect(cancelButton, SIGNAL("clicked()"),
-                     self, SLOT("reject()"))
+        okButton.clicked.connect(self.accept)
+        cancelButton.clicked.connect(self.reject)
         self.setWindowTitle("Pen Properties")
 
 
@@ -73,10 +72,8 @@ class Form(QDialog):
         layout.addWidget(self.label)
         self.setLayout(layout)
 
-        self.connect(penButtonInline, SIGNAL("clicked()"),
-                     self.setPenInline)
-        self.connect(penButton, SIGNAL("clicked()"),
-                     self.setPenProperties)
+        penButtonInline.clicked.connect(self.setPenInline)
+        penButton.clicked.connect(self.setPenProperties)
         self.setWindowTitle("Pen")
         self.updateData()
 
@@ -121,10 +118,8 @@ class Form(QDialog):
 
         form = QDialog()
         form.setLayout(layout)
-        self.connect(okButton, SIGNAL("clicked()"),
-                     form, SLOT("accept()"))
-        self.connect(cancelButton, SIGNAL("clicked()"),
-                     form, SLOT("reject()"))
+        okButton.clicked.connect(form.accept)
+        cancelButton.clicked.connect(form.reject)
         form.setWindowTitle("Pen Properties")
 
         if form.exec_():
