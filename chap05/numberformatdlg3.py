@@ -9,8 +9,9 @@
 # warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
 # the GNU General Public License for more details.
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
 
 class NumberFormatDlg(QDialog):
@@ -53,14 +54,10 @@ class NumberFormatDlg(QDialog):
         grid.addWidget(self.redNegativesCheckBox, 3, 0, 1, 2)
         self.setLayout(grid)
 
-        self.connect(self.thousandsEdit,
-                SIGNAL("textEdited(QString)"), self.checkAndFix)
-        self.connect(self.decimalMarkerEdit,
-                SIGNAL("textEdited(QString)"), self.checkAndFix)
-        self.connect(self.decimalPlacesSpinBox,
-                SIGNAL("valueChanged(int)"), self.apply)
-        self.connect(self.redNegativesCheckBox,
-                SIGNAL("toggled(bool)"), self.apply)
+        self.thousandsEdit.textEdited.connect(self.checkAndFix)
+        self.decimalMarkerEdit.textEdited.connect(self.checkAndFix)
+        self.decimalPlacesSpinBox.valueChanged.connect(self.apply)
+        self.redNegativesCheckBox.toggled.connect(self.apply)
         self.setWindowTitle("Set Number Format (`Live')")
 
 

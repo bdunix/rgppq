@@ -10,8 +10,9 @@
 # the GNU General Public License for more details.
 
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
 
 class NumberFormatDlg(QDialog):
@@ -49,10 +50,8 @@ class NumberFormatDlg(QDialog):
         grid.addWidget(buttonBox, 4, 0, 1, 2)
         self.setLayout(grid)
 
-        self.connect(buttonBox, SIGNAL("accepted()"),
-                     self, SLOT("accept()"))
-        self.connect(buttonBox, SIGNAL("rejected()"),
-                     self, SLOT("reject()"))
+        buttonBox.accepted.connect(self.accept)
+        buttonBox.rejected.connect(self.reject)
         self.setWindowTitle("Set Number Format (Modal)")
 
 
@@ -83,12 +82,12 @@ class NumberFormatDlg(QDialog):
                 raise DecimalError("The decimal marker must be a "
                                    "punctuation symbol.")
         except ThousandsError as e:
-            QMessageBox.warning(self, "Thousands Separator Error", e)
+            QMessageBox.warning(self, "Thousands Separator Error", str(e))
             self.thousandsEdit.selectAll()
             self.thousandsEdit.setFocus()
             return
         except DecimalError as e:
-            QMessageBox.warning(self, "Decimal Marker Error", e)
+            QMessageBox.warning(self, "Decimal Marker Error", str(e))
             self.decimalMarkerEdit.selectAll()
             self.decimalMarkerEdit.setFocus()
             return

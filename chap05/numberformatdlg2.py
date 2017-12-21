@@ -9,11 +9,14 @@
 # warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
 # the GNU General Public License for more details.
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
 
 class NumberFormatDlg(QDialog):
+
+    changed = pyqtSignal()
 
     def __init__(self, format, parent=None):
         super(NumberFormatDlg, self).__init__(parent)
@@ -61,10 +64,8 @@ class NumberFormatDlg(QDialog):
         grid.addWidget(buttonBox, 4, 0, 1, 2)
         self.setLayout(grid)
 
-        self.connect(buttonBox.button(QDialogButtonBox.Apply),
-                     SIGNAL("clicked()"), self.apply)
-        self.connect(buttonBox, SIGNAL("rejected()"),
-                     self, SLOT("reject()"))
+        buttonBox.button(QDialogButtonBox.Apply).clicked.connect(self.apply)
+        buttonBox.rejected.connect(self.reject)
         self.setWindowTitle("Set Number Format (Modeless)")
 
 
@@ -91,5 +92,5 @@ class NumberFormatDlg(QDialog):
                 self.decimalPlacesSpinBox.value())
         self.format["rednegatives"] = (
                 self.redNegativesCheckBox.isChecked())
-        self.emit(SIGNAL("changed"))
+        self.changed.emit()
 
