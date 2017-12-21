@@ -10,17 +10,20 @@
 # the GNU General Public License for more details.
 
 import sys
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
 MAC = True
 try:
-    from PyQt4.QtGui import qt_mac_set_native_menubar
+    from PyQt5.QtGui import qt_mac_set_native_menubar
 except ImportError:
     MAC = False
 
 
 class StringListDlg(QDialog):
+
+    acceptedList = pyqtSignal('QStringList')
 
     def __init__(self, name, stringlist=None, parent=None):
         super(StringListDlg, self).__init__(parent)
@@ -45,7 +48,7 @@ class StringListDlg(QDialog):
             if text == "Close":
                 buttonLayout.addStretch()
             buttonLayout.addWidget(button)
-            self.connect(button, SIGNAL("clicked()"), slot)
+            button.clicked.connect(slot)
         layout = QHBoxLayout()
         layout.addWidget(self.listWidget)
         layout.addLayout(buttonLayout)
@@ -110,7 +113,7 @@ class StringListDlg(QDialog):
         self.stringlist = []
         for row in range(self.listWidget.count()):
             self.stringlist.append(self.listWidget.item(row).text())
-        self.emit(SIGNAL("acceptedList(QStringList)"), self.stringlist)
+        self.acceptedList.emit(self.stringlist)
         QDialog.accept(self)
 
 
