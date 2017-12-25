@@ -10,19 +10,24 @@
 # the GNU General Public License for more details.
 
 import re
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
+
 import ui_findandreplacedlg
 
 MAC = True
 try:
-    from PyQt4.QtGui import qt_mac_set_native_menubar
+    from PyQt5.QtGui import qt_mac_set_native_menubar
 except ImportError:
     MAC = False
 
 
 class FindAndReplaceDlg(QDialog,
-        ui_findandreplacedlg.Ui_FindAndReplaceDlg):
+                        ui_findandreplacedlg.Ui_FindAndReplaceDlg):
+
+    found = pyqtSignal(int)
+    notfound = pyqtSignal()
 
     def __init__(self, text, parent=None):
         super(FindAndReplaceDlg, self).__init__(parent)
@@ -36,56 +41,45 @@ class FindAndReplaceDlg(QDialog,
             self.closeButton.setFocusPolicy(Qt.NoFocus)
         self.updateUi()
 
-
-    @pyqtSignature("QString")
     def on_findLineEdit_textEdited(self, text):
         self.__index = 0
         self.updateUi()
-
 
     def makeRegex(self):
         findText = self.findLineEdit.text()
         if self.syntaxComboBox.currentText() == "Literal":
             findText = re.escape(findText)
-        flags = re.MULTILINE|re.DOTALL|re.UNICODE
+        flags = re.MULTILINE | re.DOTALL | re.UNICODE
         if not self.caseCheckBox.isChecked():
             flags |= re.IGNORECASE
         if self.wholeCheckBox.isChecked():
             findText = r"\b{}\b".format(findText)
         return re.compile(findText, flags)
 
-
-    @pyqtSignature("")
     def on_findButton_clicked(self):
         regex = self.makeRegex()
         match = regex.search(self.__text, self.__index)
         if match is not None:
             self.__index = match.end()
-            self.emit(SIGNAL("found"), match.start())
+            self.found.emit(match.start())
         else:
-            self.emit(SIGNAL("notfound"))
-        
-        
-    @pyqtSignature("")
+            self.notfound.emit()
+
     def on_replaceButton_clicked(self):
         regex = self.makeRegex()
         self.__text = regex.sub(self.replaceLineEdit.text(),
                                 self.__text, 1)
-        
 
-    @pyqtSignature("")
     def on_replaceAllButton_clicked(self):
         regex = self.makeRegex()
         self.__text = regex.sub(self.replaceLineEdit.text(),
                                 self.__text)
-        
 
     def updateUi(self):
         enable = bool(self.findLineEdit.text())
         self.findButton.setEnabled(enable)
         self.replaceButton.setEnabled(enable)
         self.replaceAllButton.setEnabled(enable)
-
 
     def text(self):
         return self.__text
@@ -106,17 +100,19 @@ means of avoiding competition with technological ability.
 to the President of the European Parliament
 http://www.effi.org/patentit/patents_torvalds_cox.html"""
 
+
     def found(where):
         print("Found at {}".format(where))
+
 
     def nomore():
         print("No more found")
 
+
     app = QApplication(sys.argv)
     form = FindAndReplaceDlg(text)
-    form.connect(form, SIGNAL("found"), found)
-    form.connect(form, SIGNAL("notfound"), nomore)
+    form.found.connect(found)
+    form.notfound.connect(nomore)
     form.show()
     app.exec_()
     print(form.text())
-
