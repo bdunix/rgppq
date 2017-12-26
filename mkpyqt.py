@@ -20,7 +20,7 @@ __version__ = "1.3.1"
 Windows = sys.platform.lower().startswith(("win", "microsoft"))
 if Windows:
     PATH = os.path.join(os.path.dirname(sys.executable),
-                        "Lib/site-packages/PyQt5")
+                        "Scripts")
     if os.access(os.path.join(PATH, "bin"), os.R_OK):
         PATH = os.path.join(PATH, "bin")
 else:
@@ -41,7 +41,7 @@ PYRCC5 = os.path.join(PATH, "pyrcc5")
 PYLUPDATE5 = os.path.join(PATH, "pylupdate5")
 LRELEASE = "lrelease"
 if Windows:
-    PYUIC5 = PYUIC5.replace("/", "\\") + ".bat"
+    PYUIC5 = PYUIC5.replace("/", "\\") + ".exe"
     PYRCC5 = PYRCC5.replace("/", "\\") + ".exe"
     PYLUPDATE5 = PYLUPDATE5.replace("/", "\\") + ".exe"
 
@@ -129,8 +129,6 @@ def build(path):
                os.stat(source)[stat.ST_MTIME] >
                os.stat(target)[stat.ST_MTIME]):
                 args = ["-o", target, source]
-                if command == PYRCC5:
-                    args.insert(0, "-py3")
                 if sys.platform.startswith("darwin") and command == PYUIC5:
                     command = sys.executable
                     args = [PYUIC5] + args
