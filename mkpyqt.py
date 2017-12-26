@@ -13,14 +13,14 @@ import os
 import platform
 import stat
 import sys
-from PyQt4.QtCore import *
+from PyQt5.QtCore import *
 
 __version__ = "1.3.1"
 
 Windows = sys.platform.lower().startswith(("win", "microsoft"))
 if Windows:
     PATH = os.path.join(os.path.dirname(sys.executable),
-                        "Lib/site-packages/PyQt4")
+                        "Lib/site-packages/PyQt5")
     if os.access(os.path.join(PATH, "bin"), os.R_OK):
         PATH = os.path.join(PATH, "bin")
 else:
@@ -31,27 +31,27 @@ if sys.platform.startswith("darwin"):
     i = PATH.find("Resources")
     if i > -1:
         PATH = PATH[:i] + "bin"
-PYUIC4 = os.path.join(PATH, "pyuic4") # e.g. PYUIC4 = "/usr/bin/pyuic4"
+PYUIC5 = os.path.join(PATH, "pyuic5") # e.g. PYUIC5 = "/usr/bin/pyuic5"
 if sys.platform.startswith("darwin"):
-    PYUIC4 = os.path.dirname(sys.executable)
-    i = PYUIC4.find("Resources")
+    PYUIC5 = os.path.dirname(sys.executable)
+    i = PYUIC5.find("Resources")
     if i > -1:
-        PYUIC4 = PYUIC4[:i] + "Lib/python2.6/site-packages/PyQt4/uic/pyuic.py"
-PYRCC4 = os.path.join(PATH, "pyrcc4")
-PYLUPDATE4 = os.path.join(PATH, "pylupdate4")
+        PYUIC5 = PYUIC5[:i] + "Lib/python2.6/site-packages/PyQt5/uic/pyuic.py"
+PYRCC5 = os.path.join(PATH, "pyrcc5")
+PYLUPDATE5 = os.path.join(PATH, "pylupdate5")
 LRELEASE = "lrelease"
 if Windows:
-    PYUIC4 = PYUIC4.replace("/", "\\") + ".bat"
-    PYRCC4 = PYRCC4.replace("/", "\\") + ".exe"
-    PYLUPDATE4 = PYLUPDATE4.replace("/", "\\") + ".exe"
+    PYUIC5 = PYUIC5.replace("/", "\\") + ".bat"
+    PYRCC5 = PYRCC5.replace("/", "\\") + ".exe"
+    PYLUPDATE5 = PYLUPDATE5.replace("/", "\\") + ".exe"
 
 msg = []
-if not os.access(PYUIC4, os.F_OK):
-    msg.append("failed to find pyuic4; tried {}".format(PYUIC4))
-if not os.access(PYRCC4, os.F_OK):
-    msg.append("failed to find pyrcc4; tried {}".format(PYRCC4))
-if not os.access(PYLUPDATE4, os.F_OK):
-    msg.append("failed to find pylupdate4; tried {}".format(PYLUPDATE4))
+if not os.access(PYUIC5, os.F_OK):
+    msg.append("failed to find pyuic5; tried {}".format(PYUIC5))
+if not os.access(PYRCC5, os.F_OK):
+    msg.append("failed to find pyrcc5; tried {}".format(PYRCC5))
+if not os.access(PYLUPDATE5, os.F_OK):
+    msg.append("failed to find pylupdate5; tried {}".format(PYLUPDATE5))
 if msg:
     print("\n".join(msg))
     print("try manually editing this program to put the correct " +
@@ -84,15 +84,15 @@ corresponding *.ui and *.qrc files, and all *.pyc and *.pyo files.
 If executed with force, it does a clean followed by a build.
 
 If building and the translate option is given, after building, it runs
-pylupdate4 on all .py and .pyw files it encounters, and then runs lrelease
+pylupdate5 on all .py and .pyw files it encounters, and then runs lrelease
 on all .ts files it encounters. It does not use a .pro file so the .ts
-files must be created in the first place, e.g., using pylupdate4 on one
+files must be created in the first place, e.g., using pylupdate5 on one
 of the source files and using its -ts option.
 
 WARNING: Do not give any hand-coded files names that match ui_*.py or
 qrc_*.py since these will be deleted by mkpyqt.py clean!
 
-NOTE: If any tool fails to run, e.g., pyuic4, then edit this program and
+NOTE: If any tool fails to run, e.g., pyuic5, then edit this program and
 hard-code the path; the variables with the tool paths are near the top
 of the file.
 
@@ -118,22 +118,22 @@ def build(path):
         if source.endswith(".ui"):
             target = os.path.join(path,
                                   "ui_" + name.replace(".ui", ".py"))
-            command = PYUIC4
+            command = PYUIC5
         elif source.endswith(".qrc"):
             target = os.path.join(path,
                                   "qrc_" + name.replace(".qrc", ".py"))
-            command = PYRCC4
+            command = PYRCC5
         process = QProcess()
         if target is not None:
             if not os.access(target, os.F_OK) or (
                os.stat(source)[stat.ST_MTIME] >
                os.stat(target)[stat.ST_MTIME]):
                 args = ["-o", target, source]
-                if command == PYRCC4:
+                if command == PYRCC5:
                     args.insert(0, "-py3")
-                if sys.platform.startswith("darwin") and command == PYUIC4:
+                if sys.platform.startswith("darwin") and command == PYUIC5:
                     command = sys.executable
-                    args = [PYUIC4] + args
+                    args = [PYUIC5] + args
                 if Debug:
                     print("# {} {}".format(command, " ".join(args)))
                 else:
@@ -193,7 +193,7 @@ def translate(path):
     process = QProcess()
     for ts in tsfiles:
         qm = ts[:-3] + ".qm"
-        command1 = PYLUPDATE4
+        command1 = PYLUPDATE5
         args1 = [verbose] + files + ["-ts", ts]
         command2 = LRELEASE
         args2 = [silent, ts, "-qm", qm]
