@@ -9,6 +9,7 @@
 # warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
 # the GNU General Public License for more details.
 
+import subprocess
 import os
 import platform
 import stat
@@ -44,6 +45,11 @@ if Windows:
     PYUIC5 = PYUIC5.replace("/", "\\") + ".exe"
     PYRCC5 = PYRCC5.replace("/", "\\") + ".exe"
     PYLUPDATE5 = PYLUPDATE5.replace("/", "\\") + ".exe"
+
+if sys.platform.startswith("linux"):
+    exitcode, PYUIC5 = subprocess.getstatusoutput("which pyuic5") 
+    exitcode, PYRCC5 = subprocess.getstatusoutput("which pyrcc5") 
+    exitcode, PYLUPDATE5 = subprocess.getstatusoutput("which pylupdate5") 
 
 msg = []
 if not os.access(PYUIC5, os.F_OK):
