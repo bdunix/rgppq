@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file './chap06/newimagedlg.ui'
+# Form implementation generated from reading ui file '/home/bodu/PycharmProjects/rgppq/chap06/newimagedlg.ui'
 #
 # Created by: PyQt5 UI code generator 5.9.2
 #

@@ -352,9 +352,7 @@ class Form(QMainWindow):
                    os.stat(source)[stat.ST_MTIME] >
                    os.stat(target)[stat.ST_MTIME]):
                     args = ["-o", target, source]
-                    if command == pyrcc5:
-                        args.insert(0, "-py3")
-                    elif command == PYUIC5 and pyuic5x:
+                    if command == PYUIC5 and pyuic5x:
                         args.insert(0, "-x")
                     if (sys.platform.startswith("darwin") and
                         command == PYUIC5):
